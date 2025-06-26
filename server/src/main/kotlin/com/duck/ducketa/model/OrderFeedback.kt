@@ -12,7 +12,7 @@ import java.time.LocalDateTime
 data class OrderFeedback(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Long,
+    val id: Long = 0,
     val actualDeliveryTime: Int,
     val errorMinutes: Int,
     val createdAt: LocalDateTime = LocalDateTime.now(),
