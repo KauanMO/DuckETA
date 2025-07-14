@@ -4,6 +4,8 @@ from sklearn.ensemble import RandomForestRegressor
 import joblib
 import numpy as np
 from traffic import traffic_map
+from sklearn.metrics import mean_absolute_error
+from sklearn.model_selection import train_test_split
 
 def generate_fake_dataset():
     quantity = 1000
@@ -41,15 +43,20 @@ def generate_dataset():
     full_df.to_csv('data/dataset.csv', index=False, sep=';')
     return full_df
 
-
 def train_model():
     df = generate_dataset()
 
     X = df[['distance_km', 'local_time', 'queue_size']]
     y = df['delivery_time']
 
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
     model = RandomForestRegressor(n_estimators=100, random_state=42)
-    model.fit(X, y)
+    model.fit(X_train, y_train)
+
+    y_pred = model.predict(X_test)
+    mae = mean_absolute_error(y_test, y_pred)
+    print(f"Mean Absolute Error: {mae:.2f} minutes")
 
     joblib.dump(model, 'data/ducketa_brain.pkl')
 
