@@ -20,8 +20,8 @@ data class Order(
     val orderTime: LocalDateTime,
     val distanceKm: Double,
     val queueSize: Int,
-    val etaLowTraffic: Int,
-    val etaMediumTraffic: Int,
-    val etaHighTraffic: Int,
+    val etaMin: Int,
+    val etaMedium: Int,
+    val etaMax: Int,
     val createdAt: LocalDateTime = LocalDateTime.now()
 )

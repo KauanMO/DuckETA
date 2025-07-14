@@ -19,9 +19,9 @@ class Controller(val service: Service) {
 
         return ResponseEntity.ok(
             CalculateEtaResDTO(
-                mediumTrafficETA = orderEta.etaMediumTraffic,
-                lowTrafficETA = orderEta.etaLowTraffic,
-                highTrafficETA = orderEta.etaHighTraffic
+                etaMedium = orderEta.etaMedium,
+                etaMin = orderEta.etaMin,
+                etaMax = orderEta.etaMax
             )
         )
     }
