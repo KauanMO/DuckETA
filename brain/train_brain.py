@@ -3,7 +3,7 @@ import pandas as pd
 from sklearn.ensemble import RandomForestRegressor
 import joblib
 import numpy as np
-from traffic import traffic_map
+from brain.hour_map import hour_weight_map
 from sklearn.metrics import mean_absolute_error
 from sklearn.model_selection import train_test_split
 
@@ -22,9 +22,9 @@ def generate_fake_dataset():
     def calculate_time(row):
         base = row["distance_km"] * 3 + row["queue_size"] * 1.5 + row["local_time"] * 0.5
 
-        if traffic_map.get(row["local_time"], 1) == 0:
+        if hour_weight_map.get(row["local_time"], 1) == 0:
             return int(base * 0.8)
-        elif traffic_map.get(row["local_time"], 1) == 1:
+        elif hour_weight_map.get(row["local_time"], 1) == 1:
             return int(base)
         else:
             return int(base * 1.3)
