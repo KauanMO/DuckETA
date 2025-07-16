@@ -6,16 +6,26 @@ import com.duck.ducketa.dto.OrderFeedbackRegisterDTO
 import com.duck.ducketa.dto.OrderFeedbackResDTO
 import com.duck.ducketa.service.Service
 import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
+import java.time.LocalDateTime
+import java.time.ZoneId
 
 @RestController
 class Controller(val service: Service) {
-    @PostMapping("/eta")
-    fun calculateEta(@RequestBody request: CalculateEtaReqDTO): ResponseEntity<CalculateEtaResDTO> {
-        val orderEta = service.calculateEta(request)
+    @GetMapping("/eta")
+    fun calculateEta(
+        @RequestParam clientAddress: String,
+        @RequestParam restaurantAddress: String,
+        @RequestParam queueSize: Int
+    )
+            : ResponseEntity<CalculateEtaResDTO> {
+        val requestDTO = CalculateEtaReqDTO(clientAddress, restaurantAddress, LocalDateTime.now(ZoneId.of("America/Sao_Paulo")), queueSize)
+
+        val orderEta = service.calculateEta(requestDTO)
 
         return ResponseEntity.ok(
             CalculateEtaResDTO(
