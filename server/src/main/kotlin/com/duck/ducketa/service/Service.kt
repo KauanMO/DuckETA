@@ -5,6 +5,7 @@ import com.duck.ducketa.model.Order
 import com.duck.ducketa.model.OrderFeedback
 import com.duck.ducketa.repository.OrderFeedbackRepository
 import com.duck.ducketa.repository.OrderRepository
+import com.duck.ducketa.service.exception.BrainOfflineException
 import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.client.WebClient
 import reactor.core.publisher.Mono
@@ -35,7 +36,7 @@ class Service(
             queueSize = request.queueSize
         )
 
-        val predict: PredictResponseDTO = requestPredict(predictRequest).block() ?: throw RuntimeException()
+        val predict: PredictResponseDTO = requestPredict(predictRequest).block() ?: throw BrainOfflineException()
 
         val order = Order(
             orderTime = request.orderTime,
@@ -51,8 +52,6 @@ class Service(
         )
 
         return orderRepository.save(order)
-
-        return order
     }
 
     fun requestLatLon(address: String): Mono<LatLongResponseDTO> {
@@ -83,6 +82,7 @@ class Service(
             .bodyValue(predictRequest)
             .retrieve()
             .bodyToMono(PredictResponseDTO::class.java)
+            .onErrorMap { BrainOfflineException() }
     }
 
     fun calculateDistanceKm(lat1: Double, lat2: Double, lon1: Double, lon2: Double): Double {
