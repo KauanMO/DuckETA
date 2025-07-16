@@ -3,7 +3,7 @@ import pandas as pd
 from sklearn.ensemble import RandomForestRegressor
 import joblib
 import numpy as np
-from brain.hour_map import hour_weight_map
+from hour_map import hour_weight_map
 from sklearn.metrics import mean_absolute_error
 from sklearn.model_selection import train_test_split
 
