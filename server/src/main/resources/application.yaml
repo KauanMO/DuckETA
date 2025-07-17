@@ -3,9 +3,9 @@ spring:
     name: DuckETA
 
   datasource:
-    url: jdbc:postgresql://localhost:5432/DuckETA
-    username: postgres
-    password: kauan123
+    url: ${DATABASE_URL}
+    username: ${DATABASE_USERNAME}
+    password: ${DATABASE_PASSWORD}
 
   jpa:
     hibernate:

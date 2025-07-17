@@ -7,6 +7,7 @@ services:
       DATABASE_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB}
       DATABASE_USERNAME: ${POSTGRES_USER}
       DATABASE_PASSWORD: ${POSTGRES_PASSWORD}
+      BRAIN_URL: http://brain:5500
     depends_on:
       - postgres
       - brain
@@ -17,6 +18,8 @@ services:
     build: ./brain
     ports:
       - "5500:5500"
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
     depends_on:
       - postgres
     networks:
