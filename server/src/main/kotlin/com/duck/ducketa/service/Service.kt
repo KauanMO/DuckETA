@@ -6,6 +6,7 @@ import com.duck.ducketa.model.OrderFeedback
 import com.duck.ducketa.repository.OrderFeedbackRepository
 import com.duck.ducketa.repository.OrderRepository
 import com.duck.ducketa.service.exception.BrainOfflineException
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.client.WebClient
 import reactor.core.publisher.Mono
@@ -15,7 +16,8 @@ import kotlin.math.*
 @Service
 class Service(
     val orderRepository: OrderRepository,
-    val orderFeedbackRepository: OrderFeedbackRepository
+    val orderFeedbackRepository: OrderFeedbackRepository,
+    @Value("\${BRAIN_URL}") private val brainUrl: String
 ) {
     fun calculateEta(request: CalculateEtaReqDTO): Order {
         val clientLatLong: LatLongResponseDTO =
@@ -74,7 +76,7 @@ class Service(
 
     fun requestPredict(predictRequest: PredictRequestDTO): Mono<PredictResponseDTO> {
         val client = WebClient.builder()
-            .baseUrl("http://localhost:5500")
+            .baseUrl(brainUrl)
             .build()
 
         return client.post()
@@ -82,6 +84,18 @@ class Service(
             .bodyValue(predictRequest)
             .retrieve()
             .bodyToMono(PredictResponseDTO::class.java)
+            .onErrorMap { BrainOfflineException() }
+    }
+
+    fun requestEvaluateModel(): Mono<EvaluateModelResDTO> {
+        val client = WebClient.builder()
+            .baseUrl(brainUrl)
+            .build()
+
+        return client.get()
+            .uri("/evaluate-model")
+            .retrieve()
+            .bodyToMono(EvaluateModelResDTO::class.java)
             .onErrorMap { BrainOfflineException() }
     }
 
