@@ -9,11 +9,25 @@ import org.springframework.web.bind.annotation.ExceptionHandler
 class GlobalExceptionHandler {
     @ExceptionHandler
     fun handleBrainOfflineException(exception: BrainOfflineException): ResponseEntity<ExceptionModel> {
+        val status = HttpStatus.SERVICE_UNAVAILABLE
+
         val errorMessage = ExceptionModel(
-            HttpStatus.SERVICE_UNAVAILABLE.value(),
+            status.value(),
             "Serviço de geração de estimativa fora do ar."
         )
 
-        return ResponseEntity(errorMessage, HttpStatus.SERVICE_UNAVAILABLE)
+        return ResponseEntity(errorMessage, status)
+    }
+
+    @ExceptionHandler
+    fun handleBrainOfflineException(exception: OrderNotFoundException): ResponseEntity<ExceptionModel> {
+        val status = HttpStatus.NOT_FOUND
+
+        val errorMessage = ExceptionModel(
+            status.value(),
+            "Pedido não encontrado"
+        )
+
+        return ResponseEntity(errorMessage, status)
     }
 }
