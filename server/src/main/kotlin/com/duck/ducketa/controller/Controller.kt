@@ -1,6 +1,7 @@
 package com.duck.ducketa.controller
 
 import com.duck.ducketa.dto.*
+import com.duck.ducketa.service.BrainService
 import com.duck.ducketa.service.Service
 import com.duck.ducketa.service.exception.ExceptionModel
 import io.swagger.v3.oas.annotations.Operation
@@ -20,7 +21,7 @@ import java.time.LocalDateTime
 import java.time.ZoneId
 
 @RestController
-class Controller(val service: Service) {
+class Controller(val service: Service, val brainService: BrainService) {
     @Operation(
         summary = "Calcula estimativa de entrega",
         description = "A estimativa é calculada por distância entre endereços e quantidade de pedidos na fila",
@@ -114,7 +115,7 @@ class Controller(val service: Service) {
     )
     @GetMapping("evalute-model")
     fun evaluateModel(): ResponseEntity<EvaluateModelResDTO> {
-        val evaluateModelRes = service.requestEvaluateModel().block()
+        val evaluateModelRes = brainService.requestEvaluateModel().block()
 
         return ResponseEntity.ok(evaluateModelRes)
     }
