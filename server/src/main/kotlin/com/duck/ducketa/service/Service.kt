@@ -37,7 +37,8 @@ class Service(
             queueSize = request.queueSize
         )
 
-        val predict: PredictResponseDTO = brainService.requestPredict(predictRequest).block() ?: throw BrainOfflineException()
+        val predict: PredictResponseDTO =
+            brainService.requestPredict(predictRequest).block() ?: throw BrainOfflineException()
 
         val order = Order(
             orderTime = request.orderTime,
@@ -78,7 +79,7 @@ class Service(
         val orderFeedback = OrderFeedback(
             actualDeliveryTime = request.actualDeliveryTime,
             order = order,
-            errorMinutes = order.etaMedium.compareTo(request.actualDeliveryTime)
+            errorMinutes = (order.etaMedium - request.actualDeliveryTime).absoluteValue
         )
 
         return orderFeedbackRepository.save(orderFeedback)

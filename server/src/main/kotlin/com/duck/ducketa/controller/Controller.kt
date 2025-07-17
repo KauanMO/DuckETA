@@ -24,7 +24,7 @@ import java.time.ZoneId
 class Controller(val service: Service, val brainService: BrainService) {
     @Operation(
         summary = "Calcula estimativa de entrega",
-        description = "A estimativa é calculada por distância entre endereços e quantidade de pedidos na fila",
+        description = "A estimativa é calculada por distância entre endereços e quantidade de pedidos na fila, registrada no pedido e então o pedido é enviado em resposta",
         parameters = [
             Parameter(
                 name = "clientAddress",
@@ -50,7 +50,7 @@ class Controller(val service: Service, val brainService: BrainService) {
         value = [
             ApiResponse(
                 responseCode = "200", description = "Previsão gerada com sucesso", content = [
-                    Content(mediaType = "application/json", schema = Schema(implementation = CalculateEtaResDTO::class))
+                    Content(mediaType = "application/json", schema = Schema(implementation = OrderResDTO::class))
                 ]
             ),
             ApiResponse(
@@ -71,7 +71,7 @@ class Controller(val service: Service, val brainService: BrainService) {
         @RequestParam restaurantAddress: String,
         @RequestParam queueSize: Int
     )
-            : ResponseEntity<CalculateEtaResDTO> {
+            : ResponseEntity<OrderResDTO> {
         val requestDTO = CalculateEtaReqDTO(
             clientAddress,
             restaurantAddress,
@@ -82,11 +82,7 @@ class Controller(val service: Service, val brainService: BrainService) {
         val orderEta = service.calculateEta(requestDTO)
 
         return ResponseEntity.ok(
-            CalculateEtaResDTO(
-                etaMedium = orderEta.etaMedium,
-                etaMin = orderEta.etaMin,
-                etaMax = orderEta.etaMax
-            )
+            OrderResDTO(orderEta)
         )
     }
 
