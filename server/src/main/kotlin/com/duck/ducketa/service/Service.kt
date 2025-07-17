@@ -6,6 +6,7 @@ import com.duck.ducketa.model.OrderFeedback
 import com.duck.ducketa.repository.OrderFeedbackRepository
 import com.duck.ducketa.repository.OrderRepository
 import com.duck.ducketa.service.exception.BrainOfflineException
+import com.duck.ducketa.service.exception.OrderNotFoundException
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.client.WebClient
@@ -117,7 +118,7 @@ class Service(
     fun registerOrderFeedback(request: OrderFeedbackRegisterDTO): OrderFeedback {
         val order = orderRepository
             .findById(request.orderId)
-            .orElseThrow { RuntimeException() }
+            .orElseThrow { OrderNotFoundException() }
 
         val orderFeedback = OrderFeedback(
             actualDeliveryTime = request.actualDeliveryTime,
