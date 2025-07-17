@@ -1,6 +1,7 @@
 package com.duck.ducketa.controller
 
 import com.duck.ducketa.dto.*
+import com.duck.ducketa.service.BrainService
 import com.duck.ducketa.service.Service
 import com.duck.ducketa.service.exception.ExceptionModel
 import io.swagger.v3.oas.annotations.Operation
@@ -20,10 +21,10 @@ import java.time.LocalDateTime
 import java.time.ZoneId
 
 @RestController
-class Controller(val service: Service) {
+class Controller(val service: Service, val brainService: BrainService) {
     @Operation(
         summary = "Calcula estimativa de entrega",
-        description = "A estimativa é calculada por distância entre endereços e quantidade de pedidos na fila",
+        description = "A estimativa é calculada por distância entre endereços e quantidade de pedidos na fila, registrada no pedido e então o pedido é enviado em resposta",
         parameters = [
             Parameter(
                 name = "clientAddress",
@@ -49,7 +50,7 @@ class Controller(val service: Service) {
         value = [
             ApiResponse(
                 responseCode = "200", description = "Previsão gerada com sucesso", content = [
-                    Content(mediaType = "application/json", schema = Schema(implementation = CalculateEtaResDTO::class))
+                    Content(mediaType = "application/json", schema = Schema(implementation = OrderResDTO::class))
                 ]
             ),
             ApiResponse(
@@ -70,7 +71,7 @@ class Controller(val service: Service) {
         @RequestParam restaurantAddress: String,
         @RequestParam queueSize: Int
     )
-            : ResponseEntity<CalculateEtaResDTO> {
+            : ResponseEntity<OrderResDTO> {
         val requestDTO = CalculateEtaReqDTO(
             clientAddress,
             restaurantAddress,
@@ -81,11 +82,7 @@ class Controller(val service: Service) {
         val orderEta = service.calculateEta(requestDTO)
 
         return ResponseEntity.ok(
-            CalculateEtaResDTO(
-                etaMedium = orderEta.etaMedium,
-                etaMin = orderEta.etaMin,
-                etaMax = orderEta.etaMax
-            )
+            OrderResDTO(orderEta)
         )
     }
 
@@ -114,7 +111,7 @@ class Controller(val service: Service) {
     )
     @GetMapping("evalute-model")
     fun evaluateModel(): ResponseEntity<EvaluateModelResDTO> {
-        val evaluateModelRes = service.requestEvaluateModel().block()
+        val evaluateModelRes = brainService.requestEvaluateModel().block()
 
         return ResponseEntity.ok(evaluateModelRes)
     }
